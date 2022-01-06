@@ -13,7 +13,9 @@
       </div>
       <div class="flex justify-between items-center">
         <div class="w-3/4 mr-6">
-          <h3 class="text-2xl text-gray-900 mb-4">Create New Projects</h3>
+          <h3 class="text-2xl text-gray-900 mb-4">
+            Edit Campaign "{{ campaign.data.name }}"
+          </h3>
         </div>
         <div class="w-1/4 text-right">
           <button
@@ -41,7 +43,7 @@
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     type="text"
                     placeholder="Contoh: Demi Gunpla Demi Istri"
-                    v-model="campaign.name"
+                    v-model="campaign.data.name"
                   />
                 </div>
                 <div class="w-full md:w-1/2 px-3">
@@ -54,7 +56,7 @@
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     type="number"
                     placeholder="Contoh: 200000"
-                    v-model.number="campaign.goal_amount"
+                    v-model.number="campaign.data.goal_amount"
                   />
                 </div>
                 <div class="w-full px-3">
@@ -67,7 +69,7 @@
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     type="text"
                     placeholder="Deskripsi singkat mengenai projectmu"
-                    v-model="campaign.short_description"
+                    v-model="campaign.data.short_description"
                   />
                 </div>
                 <div class="w-full px-3">
@@ -80,7 +82,7 @@
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     type="text"
                     placeholder="Contoh: Ayam, Nasi Goreng, Piring"
-                    v-model="campaign.perks"
+                    v-model="campaign.data.perks"
                   />
                 </div>
                 <div class="w-full px-3">
@@ -93,7 +95,7 @@
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     type="text"
                     placeholder="Isi deskripsi panjang untuk projectmu"
-                    v-model="campaign.description"
+                    v-model="campaign.data.description"
                   ></textarea>
                 </div>
               </div>
@@ -111,35 +113,30 @@
 <script>
 export default {
   middleware: 'auth',
-  data() {
-    return {
-      campaign: {
-        name: '',
-        short_description: '',
-        description: '',
-        goal_amount: 0,
-        perks: '',
-      },
-    }
+  async asyncData({ $axios, params }) {
+    const campaign = await $axios.$get('/api/v1/campaign/' + params.slug)
+    return { campaign }
   },
   methods: {
     async save() {
       try {
-        let response = await this.$axios.$post(
-          '/api/v1/campaign',
-          this.campaign
+        let response = await this.$axios.$put(
+          '/api/v1/campaign/' + this.$route.params.id,
+          {
+            name: this.campaign.data.name,
+            short_description: this.campaign.data.short_description,
+            description: this.campaign.data.description,
+            goal_amount: this.campaign.data.goal_amount,
+            perks: this.campaign.data.perks,
+          }
         )
-        this.$router.push({
-          name: 'dashboard-projects-id',
-          params: {
-            id: response.data.id,
-            slug: response.data.slug
-          },
-        })
         console.log(response)
       } catch (err) {
         console.log(err)
       }
+    },
+    changeImage(url) {
+      this.default_image = url
     },
   },
 }
@@ -180,7 +177,7 @@ export default {
 
 .card-project {
   transition: all 0.3s ease 0s, opacity 0.5s cubic-bezier(0.5, 0, 0, 1) 1ms;
-  max-height: 445px;
+  max-height: 485px;
   overflow: hidden;
 
   /* .button-cta {
@@ -215,33 +212,33 @@ footer {
   text-decoration-color: #1abc9c;
 }
 
-/* .testimonial-user {
+.testimonial-user {
   opacity: 0.4;
-  &.active {
+  /* &.active {
     opacity: 1;
     border: 5px solid #fff;
     box-shadow: 0 0 0 1px #3b41e3;
-  }
+  } */
 }
 
-.list-check {
+/* .list-check {
   li {
     background: url('/icon-checklist.svg') no-repeat left 8px;
     padding: 6px 0px 3px 28px;
   }
-}
+} */
 
 .item-thumbnail:hover {
   background-color: #ff872e;
   border-radius: 20px;
-  &:after {
+  /* &:after {
     position: absolute;
     top: 38%;
     left: 41%;
     content: url('/icon-thumbnail-hover.svg');
-  }
-  img {
+  } */
+  /* img {
     opacity: 0.3;
-  }
-} */
+  } */
+}
 </style>

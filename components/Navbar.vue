@@ -63,7 +63,7 @@
           <img
             v-if="$store.state.auth.user.image_url"
             :src="
-              $axios.defaults.baseURL + $store.state.auth.user.image_url
+              $axios.defaults.baseURL + '/' + $store.state.auth.user.images
             "
             alt=""
             class="h-8 rounded-full mr-2"

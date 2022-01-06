@@ -11,33 +11,27 @@
           <h2 class="text-4xl text-gray-900 mb-2 font-medium">Dashboard</h2>
           <ul class="flex mt-2">
             <li class="mr-6">
-              <a class="text-gray-800 font-bold" href="#"> Your Projects </a>
-            </li>
-            <li class="mr-6">
               <nuxt-link
                 class="text-gray-500 hover:text-gray-800"
-                to="/dashboard/transactions"
+                to="/dashboard"
               >
-                Your Transactions
+                Your Projects
               </nuxt-link>
             </li>
+            <li class="mr-6">
+              <a class="text-gray-800 font-bold" href="#">
+                Your Transactions
+              </a>
+            </li>
           </ul>
-        </div>
-        <div class="w-1/4 text-right">
-          <nuxt-link
-            to="/dashboard/projects/create"
-            class="bg-orange-button hover:bg-green-button text-white font-bold py-4 px-4 rounded inline-flex items-center"
-          >
-            + Create Campaign
-          </nuxt-link>
         </div>
       </div>
       <hr />
       <div class="block mb-2">
         <div
           class="w-full lg:max-w-full lg:flex mb-4"
-          v-for="campaign in campaigns.data.rows"
-          :key="campaign.id"
+          v-for="transaction in transactions.data.rows"
+          :key="transaction.id"
         >
           <div
             class="border h-48 lg:h-auto lg:w-64 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
@@ -45,38 +39,23 @@
               'background-color: #bbb; background-position: center; background-image: url(\'' +
               $axios.defaults.baseURL +
               '/' +
-              campaign.images +
+              transaction.campaign.image_url +
               '\')'
             "
           ></div>
           <div
-          @click="$router.push({
-            name: 'dashboard-projects-id',
-            params: {
-              slug: campaign.slug,
-              id: campaign.id
-            }
-          })"
             class="w-full border-r border-b border-l border-gray-400 lg:border-l-0 lg:border-t lg:border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-8 flex flex-col justify-between leading-normal"
           >
-            <div class="mb-8">
+            <div>
               <div class="text-gray-900 font-bold text-xl mb-1">
-                {{ campaign.name }}
+                {{ transaction.campaign.name }}
               </div>
               <p class="text-sm text-gray-600 flex items-center mb-2">
                 Rp.
-                {{ new Intl.NumberFormat().format(campaign.goal_amount) }}
-                &middot;
-                {{ Math.round((campaign.current_amount / campaign.goal_amount) * 100) }}%
+                {{ new Intl.NumberFormat().format(transaction.amount) }}
+                &middot; {{ transaction.created_at }} &middot;
+                {{ transaction.status }}
               </p>
-              <p class="text-gray-700 text-base">
-                {{ campaign.short_description }}
-              </p>
-            </div>
-            <div class="flex items-center">
-              <button class="bg-green-button text-white py-2 px-4 rounded">
-                Detail
-              </button>
             </div>
           </div>
         </div>
@@ -91,9 +70,9 @@
 <script>
 export default {
   middleware: 'auth',
-  async asyncData({ $axios, app }) {
-    const campaigns = await $axios.$get('/api/v1/auth/user/campaign')
-    return { campaigns }
+  async asyncData({ $axios }) {
+    const transactions = await $axios.$get('/api/v1/transactions')
+    return { transactions }
   },
 }
 </script>
@@ -139,9 +118,9 @@ export default {
   /* .button-cta {
     opacity: 0;
     transition: all 300ms ease;
-  }
+  } */
 
-  &:hover {
+  /* &:hover {
     box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.15);
 
     .button-cta {
@@ -168,14 +147,14 @@ footer {
   text-decoration-color: #1abc9c;
 }
 
-/* .testimonial-user {
+.testimonial-user {
   opacity: 0.4;
-  &.active {
+  /* &.active {
     opacity: 1;
     border: 5px solid #fff;
     box-shadow: 0 0 0 1px #3b41e3;
-  }
-} */
+  } */
+}
 
 /* .list-check {
   li {
@@ -192,8 +171,8 @@ footer {
     top: 38%;
     left: 41%;
     content: url('/icon-thumbnail-hover.svg');
-  } */
-  /* img {
+  }
+  img {
     opacity: 0.3;
   } */
 }
