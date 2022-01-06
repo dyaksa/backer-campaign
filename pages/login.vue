@@ -77,7 +77,9 @@ export default {
         let response = await this.$auth.loginWith('local', { data: this.login })
         this.$auth.setUser(response.data.data)
         console.log(response)
-        this.$router.push({path: "/"})
+        this.$auth
+          .setUserToken(response.data.data.token)
+          .then(() =>  this.$router.push({ path: '/' }))
       } catch (err) {
         console.log(err)
       }

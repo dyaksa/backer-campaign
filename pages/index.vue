@@ -15,15 +15,12 @@
               Fund the best idea to become <br />
               a real product and be the contributor
             </p>
-            <button
-              @click="$router.push({
-                name: 'project-id',
-                params: {id: campaign.id}
-              })"
-              class="block bg-orange-button hover:bg-green-button text-white font-semibold px-12 py-3 text-xl rounded-full"
+            <a
+              href="#projects"
+              class="bg-orange-button hover:bg-green-button text-white font-semibold px-12 py-3 text-xl rounded-full"
             >
               Find a Project
-            </button>
+            </a>
           </div>
           <div class="w-1/2 flex justify-center">
             <img src="/hero-image@2x.png" alt="crowdfunding project" />
@@ -31,7 +28,7 @@
         </div>
       </div>
     </section>
-    <section class="container mx-auto pt-24">
+    <section class="container mx-auto pt-24" id="features">
       <div class="flex justify-between items-center mb-10">
         <div class="w-auto">
           <h2 class="text-3xl text-gray-900 mb-8">
@@ -83,7 +80,7 @@
         </div>
       </div>
     </section>
-    <section class="container mx-auto pt-24">
+    <section class="container mx-auto pt-24" id="projects">
       <div class="flex justify-between items-center">
         <div class="w-auto">
           <h2 class="text-3xl text-gray-900 mb-8">
@@ -98,20 +95,23 @@
         </div>
       </div>
       <div class="grid grid-cols-3 gap-4 mt-3">
-        <div v-for="campaign in campaigns.data.rows"
-        :key="campaign.id"
+        <div
+          v-for="campaign in campaigns.data.rows"
+          :key="campaign.slug"
           class="card-project w-full p-5 border border-gray-500 rounded-20"
         >
           <div class="item">
             <figure class="item-image">
               <img
-                :src="$axios.defaults.baseURL + campaign.images"
+                :src="$axios.defaults.baseURL + '/' + campaign.images"
                 alt=""
                 class="rounded-20 w-full"
               />
             </figure>
             <div class="item-meta">
-              <h4 class="text-3xl font-medium text-gray-900 mt-5">{{ campaign.name }}</h4>
+              <h4 class="text-3xl font-medium text-gray-900 mt-5">
+                {{ campaign.name }}
+              </h4>
               <p class="text-md font-light text-gray-900 h-12">
                 {{ campaign.short_description }}
               </p>
@@ -120,27 +120,43 @@
                   class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200 h-3 rounded-lg"
                 >
                   <div
-                    :style="'width: ' + (campaign.current_amount / campaign.goal_amount) * 100 + '%'"
+                    :style="
+                      'width: ' +
+                      (campaign.current_amount / campaign.goal_amount) * 100 +
+                      '%'
+                    "
                     class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-progress progress-striped"
                   ></div>
                 </div>
               </div>
               <div class="flex progress-info">
-                <div>{{ Math.round((campaign.current_amount / campaign.goal_amount) * 100) + '%' }}</div>
-                <div class="ml-auto font-semibold">Rp {{ new Intl.NumberFormat().format(campaign.goal_amount) }}</div>
+                <div>
+                  {{ Math.round((campaign.current_amount / campaign.goal_amount) * 100) }}%
+                </div>
+                <div class="ml-auto font-semibold">
+                  Rp {{ new Intl.NumberFormat().format(campaign.goal_amount) }}
+                </div>
               </div>
-              <a
-                href="/projects.html"
-                class="text-center mt-5 button-cta block w-full bg-orange-button hover:bg-green-button text-white font-semibold px-6 py-2 text-lg rounded-full"
-              >
-                Fund Now
-              </a>
             </div>
+            <button
+              @click="
+                $router.push({
+                  name: 'projects-id',
+                  params: {
+                    slug: campaign.slug,
+                    id: campaign.id
+                  },
+                })
+              "
+              class="mt-5 button-cta block w-full bg-orange-button hover:bg-green-button text-white font-semibold px-6 py-2 text-lg rounded-full"
+            >
+              Fund Now
+            </button>
           </div>
         </div>
       </div>
     </section>
-    <section class="container mx-auto pt-24">
+    <section class="container mx-auto pt-24" id="testimonials">
       <div class="flex justify-between items-center">
         <div class="w-auto">
           <h2 class="text-3xl text-gray-900 mb-8">
@@ -187,15 +203,102 @@
     </section>
     <div class="cta-clip -mt-20"></div>
     <CallToAction />
-    <Footer/>
+    <Footer />
   </div>
 </template>
 
 <script>
 export default {
-  async asyncData({$axios}){
-    const campaigns = await $axios.$get("api/v1/campaign");
-    return {campaigns: campaigns}
-  }
+  async asyncData({ $axios }) {
+    const campaigns = await $axios.$get('/api/v1/campaign')
+    return { campaigns }
+  },
 }
 </script>
+
+<style>
+.header__bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 640px;
+  background-image: url('/auth-background.svg');
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-color: #3b41e3;
+  transform: skewY(-6deg);
+  transform-origin: top left;
+}
+
+.cta-clip {
+  position: relative;
+  top: 200px;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  background-position: top right;
+  background-size: 300px;
+  background-repeat: no-repeat;
+  background-color: #fff;
+  transform: skewY(4deg);
+  transform-origin: bottom right;
+}
+
+.call-to-action {
+  background-image: url('/auth-background.svg');
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: 450px;
+}
+
+/* .card-project {
+  transition: all 0.3s ease 0s, opacity 0.5s cubic-bezier(0.5, 0, 0, 1) 1ms;
+  max-height: 485px;
+  overflow: hidden;
+
+  .button-cta {
+    opacity: 0;
+    transition: all 300ms ease;
+  } */
+
+  /* &:hover {
+    box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.15);
+
+    .button-cta {
+      opacity: 1;
+      transition: all 300ms ease;
+    }
+
+    .progress-bar,
+    .progress-info {
+      opacity: 0;
+      height: 0px;
+      margin: 0px;
+      padding: 0px;
+      transition: all 300ms ease;
+    }
+  }
+} */
+
+footer {
+  z-index: inherit;
+}
+
+.hero-underline {
+  text-decoration-color: #1abc9c;
+}
+
+/* .testimonial-user {
+  opacity: 0.4;
+  &.active {
+    opacity: 1;
+    border: 5px solid #fff;
+    box-shadow: 0 0 0 1px #3b41e3;
+  }
+} */
+</style>

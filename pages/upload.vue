@@ -73,7 +73,7 @@ export default {
       formData.append('avatar', this.selectedFiles.item(0))
 
       try {
-        let response = await this.$axios.post('/api/v1/avatars', formData, {
+        let response = await this.$axios.post('/api/v1/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
